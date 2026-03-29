@@ -64,6 +64,8 @@ Use `fusion-cam COMMAND --help` for flags and examples. Output is **one JSON obj
 
 ## Quick install
 
+### Option A — Virtual environment (isolated)
+
 From a clone of this repository:
 
 ```bash
@@ -73,13 +75,33 @@ pip install -e .
 fusion-cam --install        # copies bridge add-in into Fusion’s AddIns folder
 ```
 
-Or run the helper script (expects you to already be in the repo, or set `FUSION_CAM_CLONE_DIR`):
+### Option B — Editable install for your user (no venv; Cursor-friendly)
+
+From the **repo root**, install once. Code changes in the clone are picked up immediately; `fusion-cam` is on your PATH whenever your shell includes Python’s **user scripts** directory (many setups already do).
+
+```bash
+cd /path/to/fusion-cam-cli
+python3 -m pip install --user -e .
+fusion-cam --install
+```
+
+If `fusion-cam` is not found, add the user base `bin` directory to PATH (one line for `~/.zshrc` / `~/.bashrc`):
+
+```bash
+export PATH="$(python3 -m site --user-base)/bin:$PATH"
+```
+
+Check where scripts go: `python3 -m site --user-base` (append `/bin` on macOS/Linux; on Windows, use the `Scripts` folder under that path).
+
+**Windows (PowerShell):** same `pip install --user -e .`; if needed, prepend the `Scripts` path from `python -m site --user-base` to your user PATH.
+
+Or run the helper script (expects you to already be in the repo, or set `FUSION_CAM_CLONE_DIR`). It tries **`pip install --user -e .`**, then **links `fusion-cam` into `~/.local/bin`** (Windows: `fusion-cam.cmd` in the same folder), then runs **`fusion-cam --install`**. **Homebrew Python** often blocks user installs (PEP 668); the script then **creates `.venv`**, links that executable into **`~/.local/bin`**, and continues. Add **`~/.local/bin`** to your **`PATH`** once (e.g. `export PATH="$HOME/.local/bin:$PATH"` in `~/.zshrc`) so **`which fusion-cam`** works in Cursor and new terminals. To **always** use a venv, set `FUSION_CAM_INSTALL_USE_VENV=1`.
 
 ```bash
 bash install.sh
 ```
 
-**Windows (PowerShell):** `.\install.ps1`
+**Windows (PowerShell):** `.\install.ps1` (same try-user-then-venv; `$env:FUSION_CAM_INSTALL_USE_VENV='1'` forces venv)
 
 Then in Fusion: **UTILITIES → ADD-INS** → run **fusion-bridge** (optionally **Run on Startup**).
 

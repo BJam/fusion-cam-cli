@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Distribution** — PyPI / metadata project name is **`fusion-cam-cli`**; **`fusion-cam --install` / `--uninstall`** only manage the **`fusion-bridge`** add-in and `fusion-cam-cli` metadata (no IDE config edits; no automatic removal of other add-in folders). TCP port: **`FUSION_CAM_BRIDGE_PORT`** only, default **9876** (legacy env alias removed).
+- **`install.sh` / `install.ps1`** — Try **`pip install --user -e .`** first; if blocked (e.g. Homebrew PEP 668), **fall back to `.venv`**. No user-scope **`pip install --upgrade pip`** (often fails on managed Pythons). Set **`FUSION_CAM_INSTALL_USE_VENV=1`** to always use `.venv`. After install, **`fusion-cam` is linked into `~/.local/bin`** (macOS/Linux: symlink; Windows: `fusion-cam.cmd`) so one **`PATH`** entry can expose the CLI globally.
 
 ### Breaking
 
