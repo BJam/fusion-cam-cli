@@ -55,6 +55,13 @@ Read commands work in the default **read-only** mode. Writes need **`--mode full
 | `generate-toolpaths` | Regenerate toolpaths |
 | `post-process` | Post to NC/G-code |
 
+Examples (same as `fusion-cam … --help` for each command):
+
+```bash
+fusion-cam generate-toolpaths --mode full --setup-name "Setup1"
+fusion-cam post-process --mode full --setup-name "Setup1" --output-folder /tmp/nc
+```
+
 Use `fusion-cam COMMAND --help` for flags and examples. Output is **one JSON object** on stdout: `{"success": true, "data": ...}` or `{"success": false, "error": "...", "code": "..."}`.
 
 ## Prerequisites

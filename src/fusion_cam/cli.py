@@ -153,7 +153,7 @@ def _h_generate_toolpaths(s: CamSession, a: argparse.Namespace) -> dict[str, Any
     d = _params(a, ("setup_name", "document_name"))
     if a.operation_names_json is not None:
         d["operation_names"] = a.operation_names_json
-    return s.query("generate_toolpaths", d)
+    return s.query("generate_toolpaths", d, write=True)
 
 
 def _h_post_process(s: CamSession, a: argparse.Namespace) -> dict[str, Any]:
@@ -169,7 +169,7 @@ def _h_post_process(s: CamSession, a: argparse.Namespace) -> dict[str, Any]:
     )
     if a.operation_names_json is not None:
         d["operation_names"] = a.operation_names_json
-    return s.query("post_process", d)
+    return s.query("post_process", d, write=True)
 
 
 def _h_update_operation_parameters(s: CamSession, a: argparse.Namespace) -> dict[str, Any]:
@@ -452,12 +452,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = subcmd(
         "generate-toolpaths",
-        help_text="Regenerate toolpaths (long-running)",
+        help_text="Regenerate toolpaths (long-running; requires --mode full)",
         desc="Bridge query generate_toolpaths.",
         epilog=(
             "Example:\n"
             "  fusion-cam generate-toolpaths --mode full --setup-name \"Setup1\"\n"
-            '  fusion-cam generate-toolpaths --operation-names-json \'["Op1","Op2"]\''
+            '  fusion-cam generate-toolpaths --mode full --operation-names-json \'["Op1","Op2"]\''
         ),
         handler=_h_generate_toolpaths,
     )
@@ -472,12 +472,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = subcmd(
         "post-process",
-        help_text="Post-process setup to NC files",
+        help_text="Post-process setup to NC files (requires --mode full)",
         desc="Bridge query post_process.",
         epilog=(
             "Example:\n"
-            "  fusion-cam post-process --setup-name \"Setup1\" --output-folder /tmp/nc\n"
-            "  fusion-cam post-process --setup-name \"Setup1\" --output-folder /tmp/nc "
+            "  fusion-cam post-process --mode full --setup-name \"Setup1\" --output-folder /tmp/nc\n"
+            "  fusion-cam post-process --mode full --setup-name \"Setup1\" --output-folder /tmp/nc "
             "--program-number 1002"
         ),
         handler=_h_post_process,
