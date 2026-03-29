@@ -26,11 +26,14 @@ Thumbs.db
 # Logs
 *.log
 
-# Cursor — ignore local IDE state; project rules under .cursor/rules/ are tracked
+# Cursor — ignore local IDE state; project rules and commands are tracked
 .cursor/*
 !.cursor/rules/
 .cursor/rules/*
 !.cursor/rules/*.mdc
+!.cursor/commands/
+.cursor/commands/*
+!.cursor/commands/*.md
 
 .env
 
