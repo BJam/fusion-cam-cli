@@ -16,8 +16,8 @@ Query logic lives in `src/fusion_cam/queries/`. Iterating on queries usually mea
 ## Development setup
 
 ```bash
-git clone https://github.com/bjam/fusion-cam-mcp.git
-cd fusion-cam-mcp
+git clone https://github.com/bjam/fusion-cam-cli.git
+cd fusion-cam-cli
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .

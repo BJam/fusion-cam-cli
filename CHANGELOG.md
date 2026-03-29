@@ -9,14 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Add-in rename** — Repo folder and Fusion add-in id are now **`fusion-bridge`** (was `fusion-mcp-bridge`). **`fusion-cam --install`** deploys to the new path and removes the old AddIns folder when present. Custom event id is **`FusionBridgeRequestEvent`**; default log file **`~/fusion-bridge.log`**.
-- **Naming** — TCP port env var **`FUSION_CAM_BRIDGE_PORT`** is preferred; **`FUSION_CAM_MCP_PORT`** is still read as a legacy alias.
+- **Distribution** — PyPI / metadata project name is **`fusion-cam-cli`**; **`fusion-cam --install` / `--uninstall`** only manage the **`fusion-bridge`** add-in and `fusion-cam-cli` metadata (no IDE config edits; no automatic removal of other add-in folders). TCP port: **`FUSION_CAM_BRIDGE_PORT`** only, default **9876** (legacy env alias removed).
 
 ### Breaking
 
-- **MCP server removed** — There is no `server.py`, FastMCP, or `mcp`/`pydantic` dependency. Use the **`fusion-cam`** CLI (package `fusion_cam` under `src/fusion_cam/`).
+- **Bundled stdio server removed** — Use the **`fusion-cam`** CLI only (package `fusion_cam` under `src/fusion_cam/`).
 - **GitHub release binaries removed** — No PyInstaller artifacts or `release.yml` workflow. Install with `pip install -e .` (or future PyPI) and `fusion-cam --install` for the bridge add-in.
-- **Layout** — Importable package is `fusion_cam`; entry point `fusion-cam = fusion_cam.cli:main`. Root `fusion_cam.py` and `fusion-cam-mcp-server/` are gone.
+- **Layout** — Importable package is `fusion_cam`; entry point `fusion-cam = fusion_cam.cli:main`. Root `fusion_cam.py` and old server layout paths are gone.
 
 ### Fixed
 
@@ -31,8 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Initial public release
-- **MCP Server** with 18 tools (14 read, 4 write)
-- **fusion-mcp-bridge** add-in for Fusion 360 (subsequently renamed to `fusion-bridge`; see newer changelog entries)
+- **Programmatic CAM interface** with 18 tools (14 read, 4 write)
+- **Bridge add-in** for Fusion 360 (folder id is now `fusion-bridge`; see newer changelog entries)
 
 #### Read Tools
 - `ping` -- health check for add-in connection

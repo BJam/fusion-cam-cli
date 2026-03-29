@@ -3,9 +3,8 @@
 > **WARNING — This project is a work in progress.**
 >
 > 1. **APIs may change without notice.** Commands, behavior, and configuration are still evolving.
-> 2. **The optional installer can edit Cursor/Claude `mcp.json`** (`fusion-cam --install` may remove legacy `fusion360-cam-mcp*` entries that pointed at the old bundled server). It does not register a new server entry by default.
-> 3. **In full mode, assistants can write data directly to your Fusion 360 document** — including feeds, speeds, and machining parameters. Incorrect changes could affect real toolpaths and G-code output.
-> 4. **Windows installation and usage is lightly tested;** report issues if something breaks.
+> 2. **In full mode, assistants can write data directly to your Fusion 360 document** — including feeds, speeds, and machining parameters. Incorrect changes could affect real toolpaths and G-code output.
+> 3. **Windows installation and usage is lightly tested;** report issues if something breaks.
 
 A **Python CLI** that talks to Fusion 360 CAM over a small **TCP JSON** protocol. The **fusion-bridge** add-in runs inside Fusion, listens on `127.0.0.1:9876`, and executes query scripts on the Fusion main thread. The add-in is generic TCP → Fusion API, not CAM-only.
 
@@ -71,7 +70,7 @@ From a clone of this repository:
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .
-fusion-cam --install        # copies bridge add-in; optional legacy mcp.json cleanup
+fusion-cam --install        # copies bridge add-in into Fusion’s AddIns folder
 ```
 
 Or run the helper script (expects you to already be in the repo, or set `FUSION_CAM_CLONE_DIR`):
@@ -88,13 +87,13 @@ Then in Fusion: **UTILITIES → ADD-INS** → run **fusion-bridge** (optionally 
 
 If you skip `fusion-cam --install`, add the repo folder `fusion-bridge/` via the green **+** next to My Add-Ins so Fusion loads it directly from git.
 
-Upgrading from the old **`fusion-mcp-bridge`** add-in: run **`fusion-cam --install`** again — it installs to **`fusion-bridge`** and removes the previous **`fusion-mcp-bridge`** folder under Fusion’s AddIns when possible. Remove the old add-in from the Fusion UI if it still appears.
+If you still have an older bridge add-in entry under Fusion’s AddIns, remove it in **UTILITIES → ADD-INS**, then run **`fusion-cam --install`** so **`fusion-bridge`** is the only copy.
 
 ## Configuration
 
 ### TCP port
 
-Default **`9876`**. Override with **`FUSION_CAM_BRIDGE_PORT`** (or legacy **`FUSION_CAM_MCP_PORT`**) for both the CLI and the add-in.
+Default **`9876`**. Override with **`FUSION_CAM_BRIDGE_PORT`** for both the CLI and the add-in.
 
 ### Machining time defaults
 
@@ -114,9 +113,7 @@ Security model: only local processes can connect. Scripts are executed by design
 fusion-cam --uninstall
 ```
 
-Removes the copied add-in from Fusion’s AddIns folder, metadata under `fusion-cam-cli`, and legacy **`fusion360-cam-mcp*`** entries from Cursor/Claude `mcp.json` when present.
-
-If you previously used **release binaries** installed under `Application Support/fusion-cam-mcp`, remove that folder yourself; the CLI no longer installs a binary there.
+Removes the copied add-in from Fusion’s AddIns folder and metadata under `fusion-cam-cli`.
 
 ## Agents (Cursor)
 

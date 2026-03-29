@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "fusion-cam-mcp"
+name = "fusion-cam-cli"
 version = "0.1.0"
 description = "Fusion 360 CAM CLI — query setups, tools, and feeds/speeds via the Fusion bridge add-in"
 readme = "README.md"
@@ -29,9 +29,9 @@ classifiers = [
 fusion-cam = "fusion_cam.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/bjam/fusion-cam-mcp"
-Repository = "https://github.com/bjam/fusion-cam-mcp"
-Issues = "https://github.com/bjam/fusion-cam-mcp/issues"
+Homepage = "https://github.com/bjam/fusion-cam-cli"
+Repository = "https://github.com/bjam/fusion-cam-cli"
+Issues = "https://github.com/bjam/fusion-cam-cli/issues"
 
 [tool.hatch.build]
 sources = ["src"]

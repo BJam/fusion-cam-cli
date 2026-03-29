@@ -5,21 +5,21 @@ set -euo pipefail
 # Usage (from repo root after clone):
 #   bash install.sh
 # Or:
-#   curl -fsSL https://raw.githubusercontent.com/BJam/fusion-cam-mcp/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/BJam/fusion-cam-cli/main/install.sh | bash
 
-REPO_URL="${FUSION_CAM_REPO_URL:-https://github.com/BJam/fusion-cam-mcp.git}"
+REPO_URL="${FUSION_CAM_REPO_URL:-https://github.com/bjam/fusion-cam-cli.git}"
 CLONE_DIR="${FUSION_CAM_CLONE_DIR:-}"
 
 info()  { echo "  ✓ $*"; }
 err()   { echo "  ✗ $*" >&2; }
 
 ensure_repo() {
-    if [[ -f pyproject.toml ]] && grep -q 'fusion-cam-mcp' pyproject.toml 2>/dev/null; then
+    if [[ -f pyproject.toml ]] && grep -q 'name = "fusion-cam-cli"' pyproject.toml 2>/dev/null; then
         return 0
     fi
     if [[ -z "$CLONE_DIR" ]]; then
-        err "Not in the fusion-cam-mcp repo root (no pyproject.toml). Set FUSION_CAM_CLONE_DIR or clone first:"
-        err "  git clone $REPO_URL && cd fusion-cam-mcp && bash install.sh"
+        err "Not in the fusion-cam-cli repo root (no pyproject.toml). Set FUSION_CAM_CLONE_DIR or clone first:"
+        err "  git clone $REPO_URL && cd fusion-cam-cli && bash install.sh"
         exit 1
     fi
     if [[ ! -d "$CLONE_DIR" ]]; then
@@ -48,18 +48,24 @@ main() {
         python3 -m venv .venv
     fi
 
-    # shellcheck source=/dev/null
-    source .venv/bin/activate
+    # Use venv interpreters explicitly so we never hit Homebrew's PEP 668
+    # "externally-managed-environment" if `python`/`pip` on PATH are not the venv's.
+    venv_py="${PWD}/.venv/bin/python3"
+    if [[ ! -x "$venv_py" ]]; then
+        err ".venv is missing python3 (expected $venv_py). Remove .venv and retry: rm -rf .venv && bash install.sh"
+        exit 1
+    fi
+
     info "Upgrading pip (minimal)"
-    python -m pip install -q --upgrade pip
+    "$venv_py" -m pip install -q --upgrade pip
 
     echo ""
     echo "── pip install -e . ──"
-    pip install -e .
+    "$venv_py" -m pip install -e .
 
     echo ""
     echo "── fusion-cam --install (Fusion bridge add-in) ──"
-    fusion-cam --install
+    "${PWD}/.venv/bin/fusion-cam" --install
 
     echo ""
     info "Done."

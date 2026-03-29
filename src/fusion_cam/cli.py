@@ -54,7 +54,6 @@ def _exit_for_result(obj: dict[str, Any]) -> int:
 GLOBAL_EPILOG = """
 Environment (optional):
   FUSION_CAM_BRIDGE_PORT   TCP port for the fusion-bridge add-in (default 9876).
-  FUSION_CAM_MCP_PORT      Same as above (legacy name; still honored).
   FUSION_CAM_MODE          Default for --mode: read-only | full
 
 Global flags (--mode, --port, --pretty) work before OR after the subcommand, e.g.:
@@ -88,9 +87,7 @@ Examples:
 
 def _apply_globals(ns: argparse.Namespace) -> str:
     if ns.port is not None:
-        p = str(ns.port)
-        os.environ["FUSION_CAM_BRIDGE_PORT"] = p
-        os.environ["FUSION_CAM_MCP_PORT"] = p  # legacy alias for the add-in + older docs
+        os.environ["FUSION_CAM_BRIDGE_PORT"] = str(ns.port)
     mode = ns.mode or os.environ.get("FUSION_CAM_MODE", "read-only")
     if mode not in ("read-only", "full"):
         mode = "read-only"
@@ -290,7 +287,7 @@ def _global_options_parent() -> argparse.ArgumentParser:
         "--port",
         type=int,
         default=None,
-        help="fusion-bridge TCP port (overrides FUSION_CAM_BRIDGE_PORT / FUSION_CAM_MCP_PORT).",
+        help="fusion-bridge TCP port (overrides FUSION_CAM_BRIDGE_PORT).",
     )
     p.add_argument(
         "--pretty",

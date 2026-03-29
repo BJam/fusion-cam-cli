@@ -3,29 +3,29 @@
 .SYNOPSIS
     Developer install: venv, pip install -e ., fusion-cam --install (Fusion bridge add-in).
 .EXAMPLE
-    cd fusion-cam-mcp; .\install.ps1
+    cd fusion-cam-cli; .\install.ps1
 .EXAMPLE
-    irm https://raw.githubusercontent.com/BJam/fusion-cam-mcp/main/install.ps1 | iex
+    irm https://raw.githubusercontent.com/BJam/fusion-cam-cli/main/install.ps1 | iex
 #>
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$RepoUrl = if ($env:FUSION_CAM_REPO_URL) { $env:FUSION_CAM_REPO_URL } else { "https://github.com/BJam/fusion-cam-mcp.git" }
+$RepoUrl = if ($env:FUSION_CAM_REPO_URL) { $env:FUSION_CAM_REPO_URL } else { "https://github.com/bjam/fusion-cam-cli.git" }
 $CloneDir = $env:FUSION_CAM_CLONE_DIR
 
 function Write-Info { param([string]$Msg) Write-Host "  ✓ $Msg" -ForegroundColor Green }
 function Write-Err  { param([string]$Msg) Write-Host "  ✗ $Msg" -ForegroundColor Red }
 
 function Test-RepoRoot {
-    return (Test-Path -LiteralPath "pyproject.toml") -and (Select-String -Path "pyproject.toml" -Pattern "fusion-cam-mcp" -Quiet)
+    return (Test-Path -LiteralPath "pyproject.toml") -and (Select-String -Path "pyproject.toml" -Pattern 'name = "fusion-cam-cli"' -Quiet)
 }
 
 function Ensure-Repo {
     if (Test-RepoRoot) { return }
     if (-not $CloneDir) {
-        Write-Err "Not in the fusion-cam-mcp repo root. Clone first, or set FUSION_CAM_CLONE_DIR:"
-        Write-Err "  git clone $RepoUrl; cd fusion-cam-mcp; .\install.ps1"
+        Write-Err "Not in the fusion-cam-cli repo root. Clone first, or set FUSION_CAM_CLONE_DIR:"
+        Write-Err "  git clone $RepoUrl; cd fusion-cam-cli; .\install.ps1"
         exit 1
     }
     if (-not (Test-Path -LiteralPath $CloneDir)) {
