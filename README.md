@@ -144,9 +144,33 @@ fusion-cam --uninstall
 
 Removes the copied add-in from Fusion’s AddIns folder and metadata under `fusion-cam-cli`.
 
-## Agents (Cursor)
+## Cursor and AI assistants
 
-See `.cursor/rules/fusion-cam-cli.mdc` for how to invoke `fusion-cam` from the terminal and interpret JSON.
+For the best experience with Cursor or other assistants that run shell commands:
+
+1. **Open this repository as the workspace** so Cursor loads **Project Rules** from `.cursor/rules/` (or confirm the rule appears under **Cursor Settings → Rules**).
+2. **Install the CLI** as in [Quick install](#quick-install) and keep **Fusion 360** running with the **fusion-bridge** add-in started before the assistant runs terminal commands.
+3. **Invoke `fusion-cam` only via the terminal** (not as imagined plain chat output). **Stdout is a single JSON object** — parse it; do not assume plain text.
+4. Use **`--mode full`** on the same command for any write operation (see [Write (`--mode full`)](#write---mode-full)).
+5. Prefer **compact JSON** (omit `--pretty`) unless you need indented output for debugging.
+
+Full workflow, global flags, and the `debug` command are documented in **`fusion-cam --help`** and in **`.cursor/rules/fusion-cam-cli.mdc`**.
+
+**Repo vs user rules:** Project rules under `.cursor/rules/` load when this repo is the workspace. If you work in other folders but still use `fusion-cam`, add a **user-level** rule in Cursor so the same guidance applies everywhere. To avoid maintaining two copies, point the user rule at the repo file with a **symlink** (exact path for user rules depends on your Cursor version — check **Settings → Rules**):
+
+```bash
+ln -sf /path/to/fusion-cam-cli/.cursor/rules/fusion-cam-cli.mdc /path/to/your/global/rules/fusion-cam-cli.mdc
+```
+
+Keep the **canonical file in this repository** (what git tracks). Do **not** commit a project rule that symlinks into `~/.cursor` — that path is machine-specific. Symlinks break if you move the clone; other machines need their own link or rely on the project rule only.
+
+### Other assistants (Claude Code, local LLMs, etc.)
+
+**`.cursor/rules/*.mdc`** is loaded by **Cursor**; other apps generally do **not** read it unless they explicitly support that path.
+
+The same **workflow** still applies: install `fusion-cam`, keep **Fusion 360** and **fusion-bridge** running, run **`fusion-cam` from a real terminal**, treat **stdout as one JSON object**, and use **`--mode full`** for writes. Details: **`fusion-cam --help`** and this section above.
+
+To give non-Cursor tools project context, add a short file they already load (for example **`CLAUDE.md`** or **`AGENTS.md`** at the repo root, depending on the product) that either repeats the bullet list above or points here plus **`.cursor/rules/fusion-cam-cli.mdc`** for the full contract. Prefer **one** canonical copy of the long rule in git (the `.mdc` file) and a **brief** pointer elsewhere so you are not duplicating large blocks in multiple places.
 
 ## License
 

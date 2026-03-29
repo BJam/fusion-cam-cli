@@ -1,0 +1,62 @@
+---
+description: How to run the fusion-cam JSON CLI against the fusion-bridge add-in (for agents using the terminal)
+alwaysApply: true
+---
+
+# Fusion CAM CLI (`fusion-cam`) for Cursor agents
+
+Use the **terminal** to call the CLI. It talks to the **fusion-bridge** add-in over TCP (`127.0.0.1`, default port `9876`). Install the package from the repo root: either a **venv** (`pip install -e .`) or a **user editable** install (`python3 -m pip install --user -e .`) so `fusion-cam` is on PATH without activating a venv.
+
+## Prerequisites
+
+1. **Fusion 360** running with the **fusion-bridge** add-in started.
+2. **Package installed** from repo root: e.g. `python3 -m venv .venv`, activate, `pip install -e .`; **or** `python3 -m pip install --user -e .` (editable; see README if `fusion-cam` is not on PATH).
+3. **Command on PATH:** `fusion-cam`. **`install.sh` / `install.ps1`** link into **`~/.local/bin`** — add that directory to **`PATH`** if `which fusion-cam` fails. Fallback: `.venv/bin/fusion-cam` (macOS/Linux) or `.venv\Scripts\fusion-cam.exe` (Windows).
+
+## Invoking (agents)
+
+- Run **one subcommand per shell invocation**; **stdout is a single JSON object** (no log noise). Parse JSON; do not assume plain text.
+- **Success shape:** `{"success": true, "data": ...}`
+- **Failure shape:** `{"success": false, "error": "...", "code": "..."}` (e.g. `CONNECTION_ERROR`, `READ_ONLY`)
+- **Exit code:** `0` if `success` is true, else non-zero.
+- Prefer **compact JSON** (omit `--pretty`) to save context; use `--pretty` when the user needs readable output.
+
+## Global flags (before or after the subcommand)
+
+- `--mode full` — required for **write** subcommands (`update-operation-parameters`, `assign-body-material`, `generate-toolpaths`, `post-process`, etc.); default is read-only.
+- `--port N` — overrides `FUSION_CAM_BRIDGE_PORT` if the bridge is not on `9876`.
+- `--pretty` — indented JSON.
+
+Examples: `fusion-cam ping --pretty` and `fusion-cam --pretty ping` are equivalent.
+
+## Workflow
+
+1. `fusion-cam ping` (or `version` to sanity-check the CLI only).
+2. Read path: `list-documents`, `get-setups`, `get-operations`, `get-operation-details`, …
+3. Writes: `fusion-cam update-operation-parameters --mode full …` (always `--mode full` on the same command).
+4. **Ad-hoc Fusion API:** `fusion-cam debug --help` — arbitrary Python on the Fusion main thread; same contract as `queries/*.py` (`run(params)` or `result = …`). Optional `--with-helpers` prepends shared query helpers.
+
+## Read-only `debug` probe (API shape / experiments)
+
+- Example script: `src/fusion_cam/debug_scripts/read_only_api_probe.py`
+- Run from repo root: `fusion-cam debug --file src/fusion_cam/debug_scripts/read_only_api_probe.py`
+- Parse CLI stdout: use top-level `success`; the probe payload is in `data`.
+
+**Lessons for arbitrary bridge Python from Cursor**
+
+1. **Main thread** — Fusion `adsk.*` runs on the UI thread; the bridge queues execution there. Safe for API calls; avoid extra threading in scripts.
+2. **Return JSON-friendly data** — TCP uses `json.dumps(..., default=str)`; SWIG/proxy objects stringify poorly. Return **scalars, lists, dicts** (same discipline as `queries/*.py`).
+3. **“Read-only” is not enforced** — `debug` can still call mutating APIs; treat scripts as trusted code.
+4. **Timeouts** — Very long loops can hit the bridge’s **~30s** main-thread wait; keep probes cheap or chunk work.
+5. **API gotchas** — e.g. document length units from **Design.fusionUnitsManager**, not `document.unitsManager`; CAM op counts use **`cam.allOperations`**, not only `setup.operations`. Copy patterns from existing queries when unsure.
+
+## Docs in the tool
+
+- `fusion-cam --help` — global epilog (env vars, PATH, agent notes).
+- `fusion-cam <subcommand> --help` — flags and **copy-paste examples** for that command.
+
+## CLI vs other integrations
+
+This repository ships the **CLI** and the **fusion-bridge** add-in only. There is no bundled stdio server. Prefer **`fusion-cam`** in the terminal for scripts and agent loops. Other editor integrations are separate.
+
+If `fusion-cam` is not on PATH, use the venv executable paths above.

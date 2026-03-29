@@ -26,7 +26,12 @@ Thumbs.db
 # Logs
 *.log
 
-.cursor/
+# Cursor — ignore local IDE state; project rules under .cursor/rules/ are tracked
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/*.mdc
+
 .env
 
 fusion_api_docs/
